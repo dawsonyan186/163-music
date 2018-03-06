@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="./css/default.css">
+    <script src="./vendors/moxie.js"></script>
+    <script src="./vendors/plupload.dev.js"></script>
+    <script src="./vendors/qiniu.js"></script>
+</head>
+<style type="text/css">
+	.uploadArea{
+		border: 1px dashed #ddd;
+		border-radius:8px;
+		padding: 10px 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 200px;
+	}
+
+</style>
+<body>
+	<div class="uploadArea">
+        <div id="uploadContainer" class="draggable">
+          <button id="uploadButton" class="clickable">
+           点击或拖曳文件
+            <p>文件大小不能超过 40MB </p>
+          </div>
+        </div>
+        <span id="uploadStatus"></span>
+      </div>
+</body>
+<script src="./js/main.js"></script>
+</html>
