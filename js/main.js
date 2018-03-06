@@ -33,7 +33,7 @@ var uploader = Qiniu.uploader({
 
             var domain = up.getOption('domain');
             var res = JSON.parse(info.response);
-            var sourceLink = domain + res.key; 
+            var sourceLink = domain + encodeURIComponent(res.key); 
             //获取上传成功后的文件的Url
             console.log(`sourceLink=`+sourceLink)
         },
