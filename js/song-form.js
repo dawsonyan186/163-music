@@ -2,7 +2,6 @@
     let view = {
         el: '.page>main',
         template: `
-        <h1>新建歌曲</h1>
         <form class="form">
             <div class="row">
                 <label>歌名</label>
@@ -22,17 +21,22 @@
             </div>
         </form>`,
         render(data = {}) {
-            let placeholders = ['name', 'siger','url','id'];
+            let placeholders = ['name', 'siger', 'url', 'id'];
             let html = this.template;
             placeholders.map((string) => {
                 html = html.replace(`__${string}__`, data[string] || '');
             })
             $(this.el).html(html);
+            if (data.id) {
+                $(this.el).prepend('<h1>新建歌曲</h1>')
+            } else {
+                $(this.el).prepend('<h1>编辑歌曲</h1>')
+            }
         },
         init() {
             this.$el = $(this.el);
         },
-        reset(){
+        reset() {
             this.render({})
         }
     }
@@ -62,14 +66,7 @@
             this.view.render(this.model.data);
             this.view.init();
             this.bindEvents();
-            window.eventHub.on('upload', (data) => {
-                console.log('song from 收到了消息'+JSON.stringify(data));
-                this.view.render(data);
-            })
-            window.eventHub.on('select',(data)=>{
-                this.model.data = data;
-                this.view.render(this.model.data);
-            })
+            this.bindEventHub();
         },
         bindEvents() {
             this.view.$el.on('submit', 'form', (e) => {
@@ -79,14 +76,27 @@
                 needs.map((string) => {
                     data[string] = this.view.$el.find(`input[name="${string}"]`).val();
                 })
-                this.model.create(data).then(()=>{
-                    debugger;
+                this.model.create(data).then(() => {
                     this.view.reset();
                     var copy = JSON.stringify(this.model.data);
                     var object = JSON.parse(copy);
-                    window.eventHub.emit('create',object);
+                    window.eventHub.emit('create', object);
                 });
 
+            })
+        },
+        bindEventHub() {
+            window.eventHub.on('upload', (data) => {
+                console.log('song from 收到了消息' + JSON.stringify(data));
+                this.view.render(data);
+            })
+            window.eventHub.on('select', (data) => {
+                this.model.data = data;
+                this.view.render(this.model.data);
+            })
+            window.eventHub.on('new', () => {
+                this.model.data = { id: '', name: '', url: '', siger: '' };
+                this.view.render(this.model.data);
             })
         }
     }

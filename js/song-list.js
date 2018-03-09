@@ -18,7 +18,7 @@
             $li.addClass('active').siblings('.active').removeClass('active');
         },
         clearActive() {
-            $(this.el).find('active').removeClass('active');
+            $(this.el).find('.active').removeClass('active');
         }
     }
     let model = {
@@ -72,6 +72,10 @@
             window.eventHub.on('create', (data) => {
                 this.model.data.songs.push(data);
                 this.view.render(this.model.data.songs)
+            })
+            window.eventHub.on('new',()=>{
+            	debugger;
+            	this.view.clearActive();
             })
         }
     }
