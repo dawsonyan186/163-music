@@ -19,11 +19,15 @@
                 console.log('你选择了'+JSON.stringify(data));
                 this.deactive();
             })
-            $(this.view.el).on('click',this.active.bind(this));
+            window.eventHub.on('new',(data)=>{
+                this.active();
+            })
+            $(this.view.el).on('click',()=>{
+                window.eventHub.emit('new')
+            });
         },
         active() {
             $(this.view.el).addClass('active')
-            window.eventHub.emit('new');
         },
         deactive(){
             $(this.view.el).removeClass('active');

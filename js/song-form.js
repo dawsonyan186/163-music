@@ -28,9 +28,9 @@
             })
             $(this.el).html(html);
             if (data.id) {
-                $(this.el).prepend('<h1>新建歌曲</h1>')
-            } else {
                 $(this.el).prepend('<h1>编辑歌曲</h1>')
+            } else {
+                $(this.el).prepend('<h1>新增歌曲</h1>')
             }
         },
         init() {
@@ -57,6 +57,15 @@
             }, (error) => {
                 console.log(error);
             })
+        },
+        update(data) {
+            let song = AV.Object.createWithoutData('Song',data.id);
+            song.set('name', data.name);
+            song.set('siger', data.siger);
+            song.set('url', data.url);
+            return song.save().then((response)=>{
+                Object.assign(this.data,data);
+            })
         }
     };
     let controller = {
@@ -68,34 +77,50 @@
             this.bindEvents();
             this.bindEventHub();
         },
+        create() {
+            let data = {};
+            let needs = "name siger url id".split(" ");
+            needs.map((string) => {
+                data[string] = this.view.$el.find(`input[name="${string}"]`).val();
+            })
+            this.model.create(data).then(() => {
+                this.view.reset();
+                var copy = JSON.stringify(this.model.data);
+                var object = JSON.parse(copy);
+                window.eventHub.emit('create', object);
+            });
+        },
+        update() {
+            let data = {};
+            let needs = "name siger url id".split(" ");
+            needs.map((string) => {
+                data[string] = this.view.$el.find(`input[name="${string}"]`).val();
+            })
+            this.model.update(data).then(()=>{
+                window.eventHub.emit('update',JSON.parse(JSON.stringify(this.model.data)));
+            });
+        },
         bindEvents() {
             this.view.$el.on('submit', 'form', (e) => {
                 e.preventDefault();
-                let data = {};
-                let needs = "name siger url id".split(" ");
-                needs.map((string) => {
-                    data[string] = this.view.$el.find(`input[name="${string}"]`).val();
-                })
-                this.model.create(data).then(() => {
-                    this.view.reset();
-                    var copy = JSON.stringify(this.model.data);
-                    var object = JSON.parse(copy);
-                    window.eventHub.emit('create', object);
-                });
-
+                if(this.model.data.id){
+                    this.update();
+                }else{
+                    this.create();
+                }
             })
         },
         bindEventHub() {
-            window.eventHub.on('upload', (data) => {
-                console.log('song from 收到了消息' + JSON.stringify(data));
-                this.view.render(data);
-            })
             window.eventHub.on('select', (data) => {
                 this.model.data = data;
                 this.view.render(this.model.data);
             })
-            window.eventHub.on('new', () => {
-                this.model.data = { id: '', name: '', url: '', siger: '' };
+            window.eventHub.on('new', (data) => {
+                if (this.model.data.id) {
+                    this.model.data = data || { id: '', name: '', url: '', siger: '' };
+                } else {
+                    Object.assign(this.model.data, data);
+                }
                 this.view.render(this.model.data);
             })
         }
