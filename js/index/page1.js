@@ -1,4 +1,18 @@
 {
+	let script1 = document.createElement('script');
+	script1.src='./js/index/page1-1.js';
+	script1.onload = function(){
+		console.log("模块一加载完成")
+	}
+	document.body.appendChild(script1);
+
+	let script2 = document.createElement('script');
+	script2.src='./js/index/page1-2.js';
+	script2.onload = function(){
+		console.log("模块2加载完成")
+	}
+	document.body.appendChild(script2);
+
 	let view={
 		el:'.page-1',
 		init(){

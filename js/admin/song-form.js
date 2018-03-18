@@ -16,12 +16,16 @@
                 <label>外链</label>
                 <input name="url" type="text" value="__url__">
             </div>
+            <div class="row">
+                <label>封面</label>
+                <input name="conver" type="text" value="__conver__">
+            </div>
             <div class="row actions">
                <button>保存</button>
             </div>
         </form>`,
         render(data = {}) {
-            let placeholders = ['name', 'siger', 'url', 'id'];
+            let placeholders = ['name', 'siger', 'url', 'id','conver'];
             let html = this.template;
             placeholders.map((string) => {
                 html = html.replace(`__${string}__`, data[string] || '');
@@ -41,12 +45,13 @@
         }
     }
     let model = {
-        data: { id: '', name: '', siger: '', url: '' },
+        data: { id: '', name: '', siger: '', url: '',conver:'' },
         create(data) {
             let Song = AV.Object.extend('Song');
             let song = new Song();
             song.set('name', data.name);
             song.set('siger', data.siger);
+            song.set('conver', data.conver);
             song.set('url', data.url);
             return song.save().then((newSong) => {
                 let { id, attributes } = newSong;
@@ -62,6 +67,7 @@
             let song = AV.Object.createWithoutData('Song',data.id);
             song.set('name', data.name);
             song.set('siger', data.siger);
+            song.set('conver',data.conver);
             song.set('url', data.url);
             return song.save().then((response)=>{
                 Object.assign(this.data,data);
@@ -79,7 +85,7 @@
         },
         create() {
             let data = {};
-            let needs = "name siger url id".split(" ");
+            let needs = "name siger url id conver".split(" ");
             needs.map((string) => {
                 data[string] = this.view.$el.find(`input[name="${string}"]`).val();
             })
@@ -92,7 +98,7 @@
         },
         update() {
             let data = {};
-            let needs = "name siger url id".split(" ");
+            let needs = "name siger url id conver".split(" ");
             needs.map((string) => {
                 data[string] = this.view.$el.find(`input[name="${string}"]`).val();
             })
@@ -117,7 +123,7 @@
             })
             window.eventHub.on('new', (data) => {
                 if (this.model.data.id) {
-                    this.model.data = data || { id: '', name: '', url: '', siger: '' };
+                    this.model.data = data || { id: '', name: '', url: '', siger: '',conver:''};
                 } else {
                     Object.assign(this.model.data, data);
                 }
