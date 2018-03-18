@@ -20,12 +20,16 @@
                 <label>封面</label>
                 <input name="conver" type="text" value="__conver__">
             </div>
+            <div class="row">
+                <label>歌词</label>
+                <textarea name="lyrics">__lyrics__</textarea>
+            </div>
             <div class="row actions">
                <button>保存</button>
             </div>
         </form>`,
         render(data = {}) {
-            let placeholders = ['name', 'siger', 'url', 'id','conver'];
+            let placeholders = ['name', 'siger', 'url', 'id', 'conver', 'lyrics'];
             let html = this.template;
             placeholders.map((string) => {
                 html = html.replace(`__${string}__`, data[string] || '');
@@ -45,13 +49,14 @@
         }
     }
     let model = {
-        data: { id: '', name: '', siger: '', url: '',conver:'' },
+        data: { id: '', name: '', siger: '', url: '', conver: '', lyrics: '' },
         create(data) {
             let Song = AV.Object.extend('Song');
             let song = new Song();
             song.set('name', data.name);
             song.set('siger', data.siger);
             song.set('conver', data.conver);
+            song.set('lyrics', data.lyrics);
             song.set('url', data.url);
             return song.save().then((newSong) => {
                 let { id, attributes } = newSong;
@@ -64,13 +69,14 @@
             })
         },
         update(data) {
-            let song = AV.Object.createWithoutData('Song',data.id);
+            let song = AV.Object.createWithoutData('Song', data.id);
             song.set('name', data.name);
             song.set('siger', data.siger);
-            song.set('conver',data.conver);
+            song.set('conver', data.conver);
+            song.set('lyrics', data.lyrics);
             song.set('url', data.url);
-            return song.save().then((response)=>{
-                Object.assign(this.data,data);
+            return song.save().then((response) => {
+                Object.assign(this.data, data);
             })
         }
     };
@@ -85,9 +91,9 @@
         },
         create() {
             let data = {};
-            let needs = "name siger url id conver".split(" ");
+            let needs = "name siger url id conver lyrics".split(" ");
             needs.map((string) => {
-                data[string] = this.view.$el.find(`input[name="${string}"]`).val();
+                data[string] = this.view.$el.find(`[name="${string}"]`).val();
             })
             this.model.create(data).then(() => {
                 this.view.reset();
@@ -98,20 +104,20 @@
         },
         update() {
             let data = {};
-            let needs = "name siger url id conver".split(" ");
+            let needs = "name siger url id conver lyrics".split(" ");
             needs.map((string) => {
-                data[string] = this.view.$el.find(`input[name="${string}"]`).val();
+                data[string] = this.view.$el.find(`[name="${string}"]`).val();
             })
-            this.model.update(data).then(()=>{
-                window.eventHub.emit('update',JSON.parse(JSON.stringify(this.model.data)));
+            this.model.update(data).then(() => {
+                window.eventHub.emit('update', JSON.parse(JSON.stringify(this.model.data)));
             });
         },
         bindEvents() {
             this.view.$el.on('submit', 'form', (e) => {
                 e.preventDefault();
-                if(this.model.data.id){
+                if (this.model.data.id) {
                     this.update();
-                }else{
+                } else {
                     this.create();
                 }
             })
@@ -123,7 +129,7 @@
             })
             window.eventHub.on('new', (data) => {
                 if (this.model.data.id) {
-                    this.model.data = data || { id: '', name: '', url: '', siger: '',conver:''};
+                    this.model.data = data || { id: '', name: '', url: '', siger: '', conver: '',lyrics: '' };
                 } else {
                     Object.assign(this.model.data, data);
                 }
